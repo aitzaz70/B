@@ -1,0 +1,192 @@
+javascript:(function() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #terminal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            color: #00FF00;
+            font-size: 22px;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        #terminal h2 {
+            color: #00FF00; 
+            margin: 0 0 10px;
+        }
+        #terminal p {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        #footer-message {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #00FF00;
+            font-size: 22px; /* Match font size with the terminal */
+        }
+        #countdown {
+            position: absolute;
+            bottom: 50px;
+            left: 20px;
+            color: #00FF00;
+            font-size: 22px;
+        }
+    `;
+    document.head.appendChild(style);
+
+    const terminal = document.createElement('div');
+    terminal.id = 'terminal';
+    terminal.innerHTML = `
+        <h2>VU Terminal</h2>
+        <p id="terminal-output"></p>
+        <div id="countdown"></div>
+        <div id="footer-message"></div>
+    `;
+    document.body.appendChild(terminal);
+
+    function typeEffect(text, delay, callback) {
+        const outputElement = document.getElementById('terminal-output');
+        const commandLine = document.createElement('span');
+        outputElement.appendChild(commandLine);
+        let index = 0;
+
+        function type() {
+            if (index < text.length) {
+                commandLine.innerHTML += text.charAt(index);
+                index++;
+                setTimeout(type, delay);
+            } else {
+                outputElement.appendChild(document.createElement('br'));
+                callback();
+            }
+        }
+        type();
+    }
+
+    // Extract name and ID
+    const nameElement = document.querySelector('#m_name .m-nav__link-text');
+    let name = 'Unknown Name';
+    let id = 'Unknown ID';
+    
+    if (nameElement) {
+        name = nameElement.innerText.split('(')[0].trim();
+        id = nameElement.innerText.match(/\(([^)]+)\)/)[1];
+    }
+
+    // Dynamic extraction of project course info
+    let courseName = 'No Project Course Found';
+    const courseElements = document.querySelectorAll('a[id^="MainContent_gvCourseList_ibtnCourseHome_"]');
+
+    courseElements.forEach(courseElement => {
+        const title = courseElement.title.trim();
+        if (/Project/i.test(title) || /Thesis/i.test(title) || /Internship/i.test(title)) { // Check for Project, Thesis, or Internship
+            courseName = title; // Get the course name if it matches
+        }
+    });
+
+    const commands = [
+        "Connecting to server...",
+        "Authenticating user...",
+        `User: ${name}...`,
+        `ID: ${id}...`,
+        `Project Course: ${courseName}...`,
+        "Accessing course information...",
+        "Finding assignments...",
+        "Done."
+    ];
+
+    function executeCommands(commands, delayBetweenCommands, callback) {
+        let totalDelay = 0;
+        commands.forEach((command, index) => {
+            setTimeout(() => {
+                typeEffect(command, 80, () => {
+                    if (index === commands.length - 1) {
+                        callback();
+                    }
+                });
+            }, totalDelay);
+            totalDelay += command.length * 80 + delayBetweenCommands;
+        });
+    }
+
+    // Attempt to go full screen
+    function goFullScreen() {
+        const doc = document.documentElement;
+        if (doc.requestFullscreen) {
+            doc.requestFullscreen();
+        } else if (doc.mozRequestFullScreen) {
+            doc.mozRequestFullScreen();
+        } else if (doc.webkitRequestFullscreen) {
+            doc.webkitRequestFullscreen();
+        } else if (doc.msRequestFullScreen) {
+            doc.msRequestFullScreen();
+        }
+    }
+
+    // Execute commands and show the terminal
+    executeCommands(commands, 500, () => {
+        setTimeout(() => {
+            const footerMessages = [
+                "Developed by MuhammadZaz❤❤️",
+                "React in group if you loved this❤️"
+            ];
+
+            // Display footer messages with type effect
+            let totalFooterDelay = 0;
+            footerMessages.forEach((footerMessage, index) => {
+                setTimeout(() => {
+                    typeEffect(footerMessage, 80, () => {
+                        if (index === footerMessages.length - 1) {
+                            startCountdown();
+                        }
+                    });
+                }, totalFooterDelay);
+                totalFooterDelay += footerMessage.length * 80 + 500; // Add delay for next footer message
+            });
+        }, 500);
+    });
+
+    // Start a countdown timer
+    function startCountdown() {
+        const countdownElement = document.getElementById('countdown');
+        let timeLeft = 3; // 3 seconds countdown
+
+        const countdownInterval = setInterval(() => {
+            countdownElement.innerHTML = `Assignment Page in ${timeLeft} seconds...`;
+            timeLeft--;
+
+            if (timeLeft < 0) {
+                clearInterval(countdownInterval);
+                goToAssignmentsPage();
+            }
+        }, 1000);
+    }
+
+    // Find and navigate to the assignments page
+    function goToAssignmentsPage() {
+        terminal.style.display = 'none';
+        const courseCards = document.querySelectorAll('div.m-portlet a[id^="MainContent_gvCourseList_ibtnCourseHome_"]');
+        courseCards.forEach(courseCard => {
+            const titleText = courseCard.querySelector('.m-portlet__head-text')?.innerText;
+            if (titleText && /Project|Thesis|Internship/i.test(titleText)) {
+                const courseId = courseCard.id.split('_')[3];
+                const assignmentsButton = document.getElementById(`MainContent_gvCourseList_ibtnAssignments_${courseId}`);
+                if (assignmentsButton) {
+                    assignmentsButton.removeAttribute('disabled');
+                    assignmentsButton.click();
+                }
+            }
+        });
+    }
+
+    // Make the terminal visible and go full screen
+    terminal.style.display = 'block';
+    goFullScreen();
+})();
