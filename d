@@ -65,7 +65,7 @@ javascript:(function() {
         }
         #terminal button {
             background-color: green;
-            color: black;
+            color: white;
             border: none;
             padding: 5px 0; /* Reduced padding */
             margin: 10px 0; /* Margin to space buttons vertically */
