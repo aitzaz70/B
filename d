@@ -71,7 +71,7 @@ javascript:(function() {
             margin: 10px 0; /* Margin to space buttons vertically */
             cursor: pointer;
             border-radius: 15px;
-            font-size: 18px;
+            font-size: 32px;
             transition: background-color 0.3s, transform 0.2s;
             width: 90%; /* Set to 90% width */
             box-sizing: border-box; /* Include padding in width calculation */
