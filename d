@@ -1,4 +1,20 @@
 javascript:(function() {
+    // Request fullscreen mode
+    function requestFullscreen() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { // Firefox
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { // IE/Edge
+            elem.msRequestFullscreen();
+        }
+    }
+
+    requestFullscreen();
+
     // --- Terminal Styling and Setup ---
     const existingTerminal = document.getElementById('terminal');
     if (existingTerminal) {
@@ -51,13 +67,13 @@ javascript:(function() {
             background-color: green;
             color: black;
             border: none;
-            padding: 10px 20px;
+            padding: 5px 0; /* Reduced padding */
             margin: 10px 0; /* Margin to space buttons vertically */
             cursor: pointer;
             border-radius: 15px;
             font-size: 18px;
             transition: background-color 0.3s, transform 0.2s;
-            width: 100%; /* Make buttons full width */
+            width: 90%; /* Set to 90% width */
             box-sizing: border-box; /* Include padding in width calculation */
         }
         #terminal button:hover {
@@ -232,8 +248,12 @@ javascript:(function() {
                                 // Show success message after bypass
                                 const successMessage = "Video Bypassed/Viewed!";
                                 typeEffect(successMessage, 80, () => {
-                                    // Developer info after bypass
-                                    typeEffect("Developed by MuhammadZaz❤❤️", 80, () => {});
+                                    // Show close window message at the bottom
+                                    document.getElementById('close-message').style.display = 'block';
+                                    typeEffect("You may close this window now!", 80, () => {
+                                        // Developer info after bypass
+                                        typeEffect("Developed by MuhammadZaz❤❤️", 80, () => {});
+                                    });
                                 });
                             });
                         });
@@ -249,7 +269,7 @@ javascript:(function() {
                     }
                 } else {
                     const commands = [
-                        "First Login to VULMS. Redirecting..."
+                        "First Login to VULMS."
                     ];
 
                     executeCommands(commands, 500, () => {
